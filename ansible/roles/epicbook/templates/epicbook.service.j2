@@ -1,0 +1,22 @@
+[Unit]
+Description=EpicBook Node.js application
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+Group={{ app_user }}
+WorkingDirectory={{ app_dest }}
+Environment=NODE_ENV=production
+Environment=PORT={{ app_port }}
+Environment=DB_HOST={{ db_hostname }}
+Environment=DB_NAME={{ db_name }}
+Environment=DB_USER={{ db_admin_username }}
+Environment=DB_PASSWORD={{ db_password }}
+Environment=JAWSDB_URL=mysql://{{ db_admin_username }}:{{ db_password }}@{{ db_hostname }}/{{ db_name }}
+ExecStart=/usr/bin/env {{ app_start_command }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,17 +1,32 @@
-- name: Common configuration for all servers
-  hosts: all
+---
+- name: Apply common system updates
+  hosts: web
   become: yes
   roles:
     - common
 
-- name: Setup Backend
-  hosts: backend
+- name: Install and Configure nginx
+  hosts: web
   become: yes
   roles:
-    - backend
+    - nginx
 
-- name: Setup Frontend
-  hosts: frontend
+- name: Deploy Epicbook application
+  hosts: web
   become: yes
   roles:
-    - frontend
+    - epicbook
+
+- name: Verify Epicbook is accessible
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Check website is reachable
+      uri:
+        url: "http://{{ groups['web'][0] }}"
+        status_code: 200
+
+    - name: Confirm success
+      debug:
+        msg: "EpicBook is live!"

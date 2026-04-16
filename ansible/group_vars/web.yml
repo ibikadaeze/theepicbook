@@ -1,0 +1,11 @@
+---
+app_repo: https://github.com/pravinmishraaws/theepicbook
+app_dest: /var/www/epicbook/
+app_user: www-data
+app_port: 3000
+
+db_admin_username: epicbookadmin
+db_password: Peculiar1234!
+db_hostname: epicbook-dev-mysql.mysql.database.azure.com
+db_name: epicbook
+db_port: 3306
