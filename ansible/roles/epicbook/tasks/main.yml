@@ -17,11 +17,21 @@
     group: "{{ app_user }}"
     mode: '0755'
 
-- name: Clone EpicBook repo
-  git:
-    repo: "{{ app_repo }}"
+- name: Ensure application directory exists
+  file:
     dest: "{{ app_dest }}"
-    force: yes
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0755'
+
+- name: Copy existing EpicBook app folder to target VM
+  copy:
+    src: "{{ app_src }}/"
+    dest: "{{ app_dest }}/"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: preserve
   notify: Restart epicbook
 
 - name: Install npm dependencies
