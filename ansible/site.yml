@@ -26,6 +26,10 @@
       uri:
         url: "http://{{ groups['web'][0] }}"
         status_code: 200
+      register: site_check
+      retries: 10
+      delay: 5
+      until: site_check.status == 200
 
     - name: Confirm success
       debug:
