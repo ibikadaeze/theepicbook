@@ -104,11 +104,25 @@
     -h {{ db_hostname }}
     -u {{ db_admin_username }}
     -D {{ db_name }}
+    -Nse "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='{{ db_name }}' AND table_name='Book';"
+  environment:
+    MYSQL_PWD: "{{ db_password }}"
+  register: epicbook_book_table
+  changed_when: false
+
+- name: Check whether books have already been seeded
+  shell: >
+    mysql
+    --ssl-mode=REQUIRED
+    -h {{ db_hostname }}
+    -u {{ db_admin_username }}
+    -D {{ db_name }}
     -Nse "SELECT COUNT(*) FROM Book;"
   environment:
     MYSQL_PWD: "{{ db_password }}"
   register: epicbook_book_count
   changed_when: false
+  when: epicbook_book_table.stdout | trim == "1"
 
 - name: Seed authors from author.csv
   shell: >
@@ -123,7 +137,9 @@
     -e "LOAD DATA LOCAL INFILE '/tmp/author_utf8.csv' INTO TABLE Author CHARACTER SET utf8mb4 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, firstName, lastName);"
   environment:
     MYSQL_PWD: "{{ db_password }}"
-  when: epicbook_book_count.stdout | trim == "0"
+  when:
+    - epicbook_book_table.stdout | trim == "1"
+    - epicbook_book_count.stdout | trim == "0"
 
 - name: Seed books from books.csv
   shell: >
@@ -138,4 +154,6 @@
     -e "LOAD DATA LOCAL INFILE '/tmp/books_utf8.csv' INTO TABLE Book CHARACTER SET utf8mb4 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, title, genre, pubYear, price, inventory, bookDescription, AuthorId);"
   environment:
     MYSQL_PWD: "{{ db_password }}"
-  when: epicbook_book_count.stdout | trim == "0"
+  when:
+    - epicbook_book_table.stdout | trim == "1"
+    - epicbook_book_count.stdout | trim == "0"
