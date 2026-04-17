@@ -1,5 +1,5 @@
 ---
-app_repo: https://github.com/pravinmishraaws/theepicbook
+app_repo: https://github.com/ibikadaeze/theepicbook
 app_dest: /var/www/epicbook/
 app_user: www-data
 app_port: 3000
